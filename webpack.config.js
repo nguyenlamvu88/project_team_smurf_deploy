@@ -1,12 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const package = require('./package.json'); // To access the homepage field
+
+const isProduction = process.env.NODE_ENV === 'production';
+const publicPath = isProduction ? `/${path.basename(package.homepage)}/` : '/';
 
 module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
-    publicPath: '/', // Correct for local development
+    publicPath: publicPath, // Dynamic publicPath based on environment
     clean: true, // Cleans the build folder before each build
   },
   module: {
@@ -49,6 +53,11 @@ module.exports = {
       template: './public/index.html',
       filename: 'index.html',
     }),
+    // Generate 404.html for client-side routing
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: '404.html',
+    }),
   ],
   devServer: {
     static: {
@@ -59,6 +68,6 @@ module.exports = {
     historyApiFallback: true, // Handles client-side routing
     open: true, // Automatically opens the browser
   },
-  devtool: 'eval-source-map', // Suitable for development
-  mode: 'development', // Ensure mode is set to development
+  devtool: isProduction ? 'source-map' : 'eval-source-map', // Appropriate source maps
+  mode: 'development', // Set mode to development
 };
