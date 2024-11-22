@@ -4,9 +4,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'dist'), // Use 'dist' for compatibility with gh-pages
     filename: 'bundle.js',
-    publicPath: '/', // Correct for local development
+    publicPath: './', // Adjust for GitHub Pages deployment
     clean: true, // Cleans the build folder before each build
   },
   module: {
@@ -30,12 +30,12 @@ module.exports = {
           },
         ],
       },
-      // Optional: Handle image assets
+      // Handle image assets
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
         type: 'asset/resource',
         generator: {
-          filename: 'images/[name][ext]', // Output images to build/images/
+          filename: 'images/[name][ext]', // Output images to dist/images/
         },
       },
     ],
