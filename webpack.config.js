@@ -69,5 +69,5 @@ module.exports = {
     open: true, // Automatically opens the browser
   },
   devtool: isProduction ? 'source-map' : 'eval-source-map', // Appropriate source maps
-  mode: 'development', // Set mode to development
+  mode: isProduction ? 'production' : 'development', // Dynamic mode based on environment
 };
