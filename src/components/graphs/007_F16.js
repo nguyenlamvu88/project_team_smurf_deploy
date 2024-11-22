@@ -8,8 +8,10 @@ export function startJetAnimation(container) {
   let scene, camera, renderer, controls;
   let jets = [];
   const NUM_JETS = 150;
-  const jetModelPath = '/f16-c_falcon.glb'; // Adjust path if necessary
-  const worldMapPath = '/taiwan_gmap.png';  // Adjust path if necessary
+
+  // Use PUBLIC_URL for static asset paths
+  const jetModelPath = `${process.env.PUBLIC_URL}/f16-c_falcon.glb`;
+  const worldMapPath = `${process.env.PUBLIC_URL}/taiwan_gmap.png`;
 
   let animationFrameId;
   let startTime = Date.now();
@@ -22,22 +24,20 @@ export function startJetAnimation(container) {
     scene = new THREE.Scene();
 
     // Camera Setup
-    camera = new THREE.PerspectiveCamera(
-      60, 16/9, 0.1, 1000
-    );
-    camera.position.set(0, 200, 0); // Position the camera above the map
-    camera.lookAt(0, 0, 0); // Make the camera look at the center of the scene
+    camera = new THREE.PerspectiveCamera(60, 16 / 9, 0.1, 1000);
+    camera.position.set(0, 200, 0); // Above the map
+    camera.lookAt(0, 0, 0); // Center of the scene
 
     // Renderer Setup
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Enable alpha for transparency
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setClearColor(0x000000, 0); // Transparent background
-    renderer.setSize(container.clientWidth, container.clientWidth * 9 /16);
+    renderer.setSize(container.clientWidth, container.clientWidth * 9 / 16);
     container.appendChild(renderer.domElement);
 
     // OrbitControls Setup (Optional)
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableRotate = false; // Disable rotation to keep the camera fixed
-    controls.enableZoom = false;   // Disable zoom if necessary
+    controls.enableRotate = false; // Fixed rotation
+    controls.enableZoom = false;
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0xcccccc, 0.5);
@@ -63,7 +63,7 @@ export function startJetAnimation(container) {
       jetModelPath,
       (gltf) => {
         const jetModel = gltf.scene;
-        jetModel.scale.set(0.2, 0.2, 0.2); // Initial scale
+        jetModel.scale.set(0.2, 0.2, 0.2);
 
         for (let i = 0; i < NUM_JETS; i++) {
           const jet = jetModel.clone();
@@ -75,60 +75,48 @@ export function startJetAnimation(container) {
             landed: false,
             targetPosition: getLandingPosition(i),
             initialPosition: initialPosition.clone(),
-            delay: i * 0.1 // Stagger the jets by 0.1 seconds each
+            delay: i * 0.1, // Stagger jets
           });
         }
       },
       undefined,
       (error) => {
-        console.error('Error loading the jet model:', error);
+        console.error('Error loading jet model:', error);
       }
     );
 
-    // Handle Window Resize
-    window.addEventListener('resize', onWindowResize, false);
+    // Handle Resize
+    window.addEventListener('resize', onWindowResize);
   }
 
   function initializeJet(jet, index) {
-    // Position jets along the top edge from left to right
     const startX = -200 + (400 / NUM_JETS) * index;
     const startZ = -100; // Top edge of the map
-    const startY = 10;   // Slightly above the map
+    const startY = 10;
     const position = new THREE.Vector3(startX, startY, startZ);
     jet.position.copy(position);
 
-    // Initial rotation towards landing position
     jet.lookAt(getLandingPosition(index));
-
-    // Rotate the jet 180 degrees around Y-axis to face forward
     jet.rotateY(Math.PI);
 
-    // Return the initial position for scaling calculations
     return position;
   }
 
   function getLandingPosition(index) {
-    // Define landing area parameters
     const startAngle = 255; // Starting angle in degrees
     const endAngle = 105;   // Ending angle in degrees
-    const totalSpread = startAngle - endAngle; // Should be 150 degrees
-    const deltaAngle = totalSpread / (NUM_JETS - 1); // Degrees per jet
+    const deltaAngle = (startAngle - endAngle) / (NUM_JETS - 1);
 
-    // Calculate the angle for the current jet
     const angleDegrees = startAngle - deltaAngle * index;
-
-    // Adjust the angle to rotate the arc by 90 degrees counterclockwise
-    const adjustedAngleDegrees = angleDegrees - 90; // Subtract 90 degrees
+    const adjustedAngleDegrees = angleDegrees - 90;
     const angleRadians = THREE.MathUtils.degToRad(adjustedAngleDegrees);
 
-    // Landing radius and center position
-    const landingRadius = 100; // Adjust as needed
-    const centerX = 0;         // Center X-coordinate
-    const centerZ = 28;         // last was 21
+    const landingRadius = 100;
+    const centerX = 0;
+    const centerZ = 28;
 
-    // Calculate landing position along the arc
     const landingX = centerX + landingRadius * Math.cos(angleRadians);
-    const landingZ = centerZ + (landingRadius * Math.sin(angleRadians)) * 0.5; // Flattened vertically
+    const landingZ = centerZ + landingRadius * Math.sin(angleRadians) * 0.5;
 
     return new THREE.Vector3(landingX, 0, landingZ);
   }
@@ -136,62 +124,50 @@ export function startJetAnimation(container) {
   function animate() {
     animationFrameId = requestAnimationFrame(animate);
 
-    const elapsedTime = (Date.now() - startTime) / 1000; // In seconds
+    const elapsedTime = (Date.now() - startTime) / 1000;
 
     jets.forEach((jetData) => {
-      if (!jetData.landed) {
-        if (elapsedTime > jetData.delay) {
-          const jet = jetData.object;
-          const target = jetData.targetPosition;
+      if (!jetData.landed && elapsedTime > jetData.delay) {
+        const jet = jetData.object;
+        const target = jetData.targetPosition;
 
-          // Move jet towards the target
-          const direction = new THREE.Vector3().subVectors(target, jet.position).normalize();
-          const speed = 1; // Adjust speed if necessary
-          jet.position.add(direction.multiplyScalar(speed));
+        const direction = new THREE.Vector3().subVectors(target, jet.position).normalize();
+        const speed = 1; // Movement speed
+        jet.position.add(direction.multiplyScalar(speed));
 
-          // Adjust the jet's scale based on distance to target
-          const totalDistance = jetData.initialPosition.distanceTo(target);
-          const currentDistance = jet.position.distanceTo(target);
-          const scale = 0.2 + 0.8 * (1 - currentDistance / totalDistance); // Scale from 0.2 to 1
-          jet.scale.set(scale, scale, scale);
+        const totalDistance = jetData.initialPosition.distanceTo(target);
+        const currentDistance = jet.position.distanceTo(target);
+        const scale = 0.2 + 0.8 * (1 - currentDistance / totalDistance);
+        jet.scale.set(scale, scale, scale);
 
-          // Check if the jet has "landed"
-          if (jet.position.distanceTo(target) < 1) {
-            jetData.landed = true;
-            jet.position.copy(target);
+        if (jet.position.distanceTo(target) < 1) {
+          jetData.landed = true;
+          jet.position.copy(target);
 
-            // Set the jet's rotation to match the adjusted angle
-            const angleDegrees = 200 + ((255 - 105) / (NUM_JETS - 1)) * jetData.index;
-            const adjustedAngleDegrees = angleDegrees - 90; // Subtract 90 degrees
-            const angleRadians = THREE.MathUtils.degToRad(adjustedAngleDegrees);
-            jet.rotation.set(0, angleRadians, 0);
-          }
+          const angleDegrees = 200 + ((255 - 105) / (NUM_JETS - 1)) * jetData.index;
+          const adjustedAngleDegrees = angleDegrees - 90;
+          const angleRadians = THREE.MathUtils.degToRad(adjustedAngleDegrees);
+          jet.rotation.set(0, angleRadians, 0);
         }
       }
     });
 
-    // Update controls if you keep OrbitControls
     controls.update();
     renderer.render(scene, camera);
   }
 
   function onWindowResize() {
-    camera.aspect = 16 / 9; // fixed ratio
+    camera.aspect = 16 / 9;
     camera.updateProjectionMatrix();
-
     renderer.setSize(container.clientWidth, container.clientWidth * 9 / 16);
   }
 
-  // Return a clean-up function to stop the animation and remove event listeners
+  // Cleanup
   return () => {
-    window.removeEventListener('resize', onWindowResize, false);
+    window.removeEventListener('resize', onWindowResize);
     cancelAnimationFrame(animationFrameId);
-
-    // Clean up Three.js scene
     renderer.dispose();
     controls.dispose();
-
-    // Remove the renderer's canvas from the container
     container.removeChild(renderer.domElement);
   };
 }

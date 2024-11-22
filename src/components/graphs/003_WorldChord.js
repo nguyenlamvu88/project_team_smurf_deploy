@@ -3,22 +3,16 @@ import DeckGL from '@deck.gl/react';
 import { ArcLayer } from '@deck.gl/layers';
 import { Map } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import countryCoordinates from '/public/countryCoordinates';
+import countryCoordinates from `${process.env.PUBLIC_URL}/countryCoordinates`;
 
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoia3dwdGhlZ3JlYXQiLCJhIjoiY20zajljd3Z2MDExZjJycHRvcGE0dm9uYyJ9.9IwsWKd3rM0aVxjXND4LUQ'; // Replace with your actual Mapbox token
 
 // Function to extract the year from a record dynamically
 function extractYearFromRecord(record) {
-  // Example: If the record has a `date` field with a year, extract it
   if (record.date) {
     const match = record.date.match(/\b(20\d{2})\b/); // Match years like 2000-2099
     return match ? parseInt(match[0], 10) : null;
   }
-
-  // If no valid year can be extracted, return null
-  /*
-  console.warn('Year not found for record:', record);
-  */
   return null;
 }
 
@@ -33,16 +27,13 @@ function WorldChord() {
     "United States": [70, 130, 180], // Steel Blue (rgb format)
     "Russia": [220, 20, 60], // Crimson (rgb format)
     "China": [255, 219, 88], // Light Gold (rgb format)
-    // Add more countries and colors as needed
   };
   
   useEffect(() => {
     // Fetch data from converted_data.json
-    fetch(`/data/processed/converted_data.json`)
+    fetch(`${process.env.PUBLIC_URL}/data/processed/converted_data.json`)
       .then(response => response.json())
       .then(fetchedData => {
-
-        // Add the `year` field dynamically if missing
         const updatedData = fetchedData.map(d => ({
           ...d,
           year: d.year || extractYearFromRecord(d) // Add year dynamically if needed
@@ -50,7 +41,6 @@ function WorldChord() {
 
         setData(updatedData);
 
-        // Filter the data for the initial year
         const initialFilteredData = updatedData.filter(d => d.year === year);
         setFilteredData(initialFilteredData);
       })
@@ -58,7 +48,6 @@ function WorldChord() {
   }, [year]);
 
   useEffect(() => {
-    // Update filtered data when year changes
     if (data.length > 0) {
       const updatedFilteredData = data.filter(d => d.year === year);
       setFilteredData(updatedFilteredData);
@@ -66,34 +55,28 @@ function WorldChord() {
   }, [year, data]);
 
   const filteredByCountry = filteredData.filter(d => {
-    if (selectedCountry === 'all') return true; // Show all if 'all' is selected
-    return d.origin.toLowerCase() === selectedCountry.toLowerCase(); // Filter by selected country
+    if (selectedCountry === 'all') return true;
+    return d.origin.toLowerCase() === selectedCountry.toLowerCase();
   });
-  // Filter out invalid records
+
   const validFilteredData = filteredByCountry.filter(d => {
     const source = countryCoordinates[d.origin];
     const target = countryCoordinates[d.destination];
 
     if (!["China", "Russia", "United States"].includes(d.origin)) {
-      return false; // Skip records where the origin is not one of these
+      return false;
     }
 
-    // Log missing countries
-    /*
-    if (!source) console.warn(`Missing source coordinates for: ${d.origin}`);
-    if (!target) console.warn(`Missing target coordinates for: ${d.destination}`);
-    */
-    // Keep only valid records
     return source && target;
   });
 
   const layers = new ArcLayer({
     id: 'arc-layer',
-    data: validFilteredData, // Use only validated data
+    data: validFilteredData,
     getSourcePosition: d => countryCoordinates[d.origin],
     getTargetPosition: d => countryCoordinates[d.destination],
     getSourceColor: d => countryColors[d.origin] || [255, 255, 255],
-    getTargetColor: d => countryColors[d.origin] || [0, 128, 255], // Default to blue if country color is missing
+    getTargetColor: d => countryColors[d.origin] || [0, 128, 255],
     getWidth: d => Math.log(d.quantity + 1),
     pickable: true,
     getTooltip: ({ object }) => {
@@ -138,7 +121,8 @@ function WorldChord() {
             pitch: 30
           }}
           controller={true}
-          layers={[layers]}onHover={(info) => {
+          layers={[layers]}
+          onHover={(info) => {
             if (info.object) {
               setHoveredInfo(info);
             } else {
