@@ -1,5 +1,7 @@
 
 # DSCI 554 Group Project - Global Arms Trade Dashboard
+Vu Nguyen
+USCID: 2120314402
 
 ## Overview
 
