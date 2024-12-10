@@ -1,6 +1,7 @@
 
 # DSCI 554 Group Project - Global Arms Trade Dashboard
 Vu Nguyen
+
 USCID: 2120314402
 
 ## Overview
@@ -9,13 +10,6 @@ The Global Arms Trade Dashboard is a React-based, interactive web application of
 
 The dashboad **web application** is live and can be accessed [here](https://nguyenlamvu88.github.io/dsci_554_arms_sales_project/).
 
-## Project Information
-
-### Group Name
-TEAM SMURF 
-
-![Untitled design (2)](https://github.com/user-attachments/assets/cfbbde26-948c-4f46-9e02-30ef24be46c2)
- 
 ## Project Structure
 
 ```
