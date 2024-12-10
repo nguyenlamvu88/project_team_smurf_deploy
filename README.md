@@ -13,54 +13,7 @@ The dashboad **web application** is live and can be accessed [here](https://nguy
 TEAM SMURF 
 
 ![Untitled design (2)](https://github.com/user-attachments/assets/cfbbde26-948c-4f46-9e02-30ef24be46c2)
-
-
-### Team Members
-- **Member 1** - vulnguye@usc.edu
-    - USCID: 2120314402
-- **Member 2** - kwparker@usc.edu
-    - USCID: 3006191784
-- **Member 3** - dlee8267@usc.edu
-    - USCID: 
-  
----
-
-## Artifacts
-
-- **[Demonstration URL](<demo-url>)**
-- **[Presentation URL](<presentation-pdf-url>)**
-- **[Paper PDF](<article-pdf-url>)** and **[Paper Overleaf URL](<overleaf-article-url>)**
-- **[YouTube Video Link](<youtube-video-url>)**
-
----
-
-## Team Contributions
-
-### Demonstration
-- **Member 1**: [Brief contribution in ≤250 characters]
-- **Member 2**: [Brief contribution in ≤250 characters]
-- **Member 3**: [Brief contribution in ≤250 characters]
-- **Member 4**: [Brief contribution in ≤250 characters]
-
-### Presentation
-- **Member 1**: [Brief contribution in ≤250 characters]
-- **Member 2**: [Brief contribution in ≤250 characters]
-- **Member 3**: [Brief contribution in ≤250 characters]
-- **Member 4**: [Brief contribution in ≤250 characters]
-
-### Paper
-- **Member 1**: [Brief contribution in ≤250 characters]
-- **Member 2**: [Brief contribution in ≤250 characters]
-- **Member 3**: [Brief contribution in ≤250 characters]
-- **Member 4**: [Brief contribution in ≤250 characters]
-
-### YouTube Video
-- **Member 1**: [Brief contribution in ≤250 characters]
-- **Member 2**: [Brief contribution in ≤250 characters]
-- **Member 3**: [Brief contribution in ≤250 characters]
-- **Member 4**: [Brief contribution in ≤250 characters]
-
-
+ 
 ## Project Structure
 
 ```
